@@ -1,0 +1,37 @@
+imports = ["postgres.nix"]
+
+[services.postgres]
+package = "pkgs.postgresql_16"
+setupPostgresOnStartup = true
+listenAddresses = "*"
+
+[[env]]
+name = "DBNAME"
+value = "st"
+
+[[env]]
+name = "PGPORT"
+value = "7700"
+
+[[env]]
+name = "ST_DATABASE_URL"
+eval = 'postgres:///$DBNAME?port=$PGPORT\&host=$PGHOST'
+
+[[env]]
+name = "ST_DATABASE_URL_LOCALHOST"
+eval = 'postgres://${USER:-$(id -nu)}@localhost:$PGPORT/$DBNAME'
+
+[[commands]]
+name = "setup-db"
+command = '''
+createdb  -h $PGDATA -p $PGPORT $DBNAME
+pushd $PRJ_ROOT/backend
+          '''
+
+[[commands]]
+name = "reset-db"
+command = '''
+rm -rf $PGDATA
+setup-postgres
+postgres
+          '''

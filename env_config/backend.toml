@@ -1,2 +1,8 @@
 [[commands]]
 package = "scalafmt"
+
+[devshell]
+packages = [
+   "nodePackages.http-server",
+]
+

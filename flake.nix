@@ -15,7 +15,7 @@
         basic = {
           imports = [ typelevel-nix.typelevelShell ]
             ++ map pkgs.devshell.importTOML [ ./env_config/server.toml ];
-          name = "substube";
+          name = "subtube";
         };
         extraImports = files:
           basic // {

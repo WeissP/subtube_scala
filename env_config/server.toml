@@ -4,7 +4,7 @@ eval = "$PRJ_ROOT/frontend/dist"
 
 [[env]]
 name = "ST_SERVER_PORT"
-value = "7070"
+value = "9090"
 
 [[env]]
 name = "ST_SERVER_SECRET"

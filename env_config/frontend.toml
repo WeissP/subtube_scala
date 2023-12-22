@@ -1,5 +1,0 @@
-[devshell]
-packages = [
-   "nodePackages.svelte-language-server",
-]
-

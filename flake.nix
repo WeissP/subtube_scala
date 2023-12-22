@@ -1,21 +1,26 @@
 {
   inputs = {
-    typelevel-nix.url = "github:typelevel/typelevel-nix";
-    nixpkgs.follows = "typelevel-nix/nixpkgs";
-    flake-utils.follows = "typelevel-nix/flake-utils";
+    devshell.url = "github:numtide/devshell";
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils, typelevel-nix }:
+  outputs = { self, flake-utils, devshell, nixpkgs, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ typelevel-nix.overlay ];
+          overlays = [ devshell.overlays.default ];
         };
+        jdk = pkgs.jdk19;
         basic = {
-          imports = [ typelevel-nix.typelevelShell ]
-            ++ map pkgs.devshell.importTOML [ ./env_config/server.toml ];
+          imports = map pkgs.devshell.importTOML [ ./env_config/server.toml ];
           name = "subtube";
+          packages = [ jdk (pkgs.metals.override { jre = jdk; }) ];
+          commands = [{ package = pkgs.mill.override { jre = jdk; }; }];
+          env = [{
+            name = "JAVA_HOME";
+            value = "${jdk}";
+          }];
         };
         extraImports = files:
           basic // {

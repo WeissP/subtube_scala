@@ -1,11 +1,10 @@
 package com.jb.resources
 
+import cats.effect.kernel.{Async, Resource}
 import com.jb.config.AppConfig
 import org.http4s.client.Client
-import org.http4s.ember.client.EmberClientBuilder
-import cats.effect.kernel.{Async}
-import cats.effect.kernel.Resource
 import org.http4s.client.middleware.FollowRedirect
+import org.http4s.ember.client.EmberClientBuilder
 
 sealed abstract class AppResources[F[_]](
     val client: Client[F],

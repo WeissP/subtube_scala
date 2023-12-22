@@ -3,25 +3,24 @@ package com.jb.routes
 import cats.effect.IO.asyncForIO
 import cats.effect.*
 import cats.syntax.all._
+import com.jb.algebras.Algebras
+import com.jb.config.AppConfig
 import com.jb.domain.*
 import com.jb.domain.schemas.given
+import com.jb.programs.Programs
+import com.jb.routes.youtube.tag
 import io.github.iltotore.iron.*
+import org.http4s.ember.server.EmberServerBuilder
+import org.http4s.server.{Router, Server}
 import sttp.tapir.Schema.annotations.description
 import sttp.tapir.*
 import sttp.tapir.generic.Configuration
 import sttp.tapir.generic.auto.*
+import sttp.tapir.json.pickler.*
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.server.http4s.*
-import sttp.tapir.json.pickler.*
 import sttp.tapir.server.model.ValuedEndpointOutput
 import sttp.tapir.swagger.bundle.SwaggerInterpreter
-import com.jb.algebras.Algebras
-import com.jb.routes.youtube.tag
-import com.jb.programs.Programs
-import com.jb.config.AppConfig
-import org.http4s.ember.server.EmberServerBuilder
-import org.http4s.server.Router
-import org.http4s.server.Server
 
 def myFailureResponse(m: String): ValuedEndpointOutput[_] =
   ValuedEndpointOutput(jsonBody[MyFailure], MyFailure(m))
@@ -33,8 +32,11 @@ val serverOptions: Http4sServerOptions[IO] = {
 }
 
 object queryParam {
-  val mediaSortOrder = query[MediaSortOrder]("sort_order")
-    .default(MediaSortOrder.Newest)
+  val mediaSortOrder = {
+    query[MediaSortOrder]("sort_order")
+      // .description(extraDesc("The sort order of medias. "))
+      .default(MediaSortOrder.Newest)
+  }
 
   val cacheRefreshThreshold = query[UnixTS]("cache_refresh_threshold")
     .default(UnixTS(1))

@@ -1,11 +1,10 @@
 package com.jb.config
 
-import org.http4s.Uri
 import cats.effect.kernel.Async
 import cats.syntax.all.*
-import org.http4s.syntax.all.uri
-import com.comcast.ip4s.Port
 import com.comcast.ip4s.{Host, Port, port}
+import org.http4s.Uri
+import org.http4s.syntax.all.uri
 
 case class AppConfig(invidiousRoot: Uri, host: Host, port: Port)
 

@@ -1,5 +1,8 @@
 package com.jb.domain
 
+import cats.Functor
+import cats.effect.kernel.Clock
+import cats.syntax.all._
 import com.jb.domain.integration.pickle.given
 import com.jb.domain.integration.upickle.given
 import io.github.iltotore.iron._
@@ -23,6 +26,12 @@ object UnsignedInt extends RefinedTypeOps[Int, GreaterEqual[0], UnsignedInt]
 
 opaque type UnixTS = Long :| Positive
 object UnixTS extends RefinedTypeOps[Long, Positive, UnixTS]
+
+opaque type CachedAt = Long :| Positive
+object CachedAt extends RefinedTypeOps[Long, Positive, CachedAt] {
+  def now[F[_]: Functor](using c: Clock[F]): F[CachedAt] =
+    c.realTime.map(_.toSeconds.refine)
+}
 
 type NonEmptyString = String :| Not[Empty]
 opaque type MediaTag = NonEmptyString
@@ -64,7 +73,7 @@ case class MediaMeta(
     @description("The source of the media")
     source: MediaSource,
     @description("The UNIX timestamp that the media info was cached")
-    cachedAt: UnixTS,
+    cachedAt: CachedAt,
     @description("Personal introduction of the media")
     introduction: Option[NonEmptyString],
 )

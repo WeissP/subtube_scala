@@ -1,23 +1,21 @@
 package com.jb.algebras.youtube
 
-import cats.effect.kernel.Resource
+import cats.effect.kernel.{Async, Resource}
+import cats.syntax.all.*
 import com.jb.algebras.YoutubeQueryAlg
-import org.http4s.client.Client
-import org.http4s.ember.client.EmberClientBuilder
-import cats.effect.kernel.Async
 import com.jb.domain.*
-import org.http4s.client.middleware.FollowRedirect
-import org.http4s.Request
-import org.http4s.Uri
-import org.http4s.Method
-import org.http4s.EntityDecoder
-import org.http4s.circe.jsonOf
-import io.github.iltotore.iron.circe.given
-import org.http4s.circe.CirceEntityDecoder._
 import io.circe.generic.auto.*
+import io.circe.{Decoder, HCursor}
+import io.github.iltotore.iron._
+import io.github.iltotore.iron.circe.given
+import io.github.iltotore.iron.constraint.all._
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.jsonOf
+import org.http4s.client.Client
+import org.http4s.client.middleware.FollowRedirect
+import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.headers.Accept
-import org.http4s.MediaType
-import org.http4s.Headers
+import org.http4s.{EntityDecoder, Headers, MediaType, Method, Request, Uri}
 
 object Invidious {
   def httpClient[F[_]: Async] = {
@@ -44,9 +42,16 @@ object Invidious {
     )
   }
 
+  given Decoder[Channel] = new Decoder[Channel] {
+    final def apply(c: HCursor): Decoder.Result[Channel] = (
+      c.get[YtbChannelID]("authorId"),
+      c.get[String]("descriptionHtml"),
+      c.get[Int :| Positive]("subCount"),
+      c.get[List[Thumbnail]]("authorThumbnails"),
+    ).mapN(Channel.apply)
+  }
+
   def client[F[_]: Async](c: Client[F], root: Uri): YoutubeQueryAlg[F] = {
-    // given EntityDecoder[F, Channel] = jsonOf[F, Channel]
-    // val clt = FollowRedirect(10, _ => true)(c)
     new YoutubeQueryAlg[F] {
       def videosByChannel(
           id: YtbChannelID,
@@ -55,8 +60,7 @@ object Invidious {
       ): F[List[MediaInfo[YoutubeMedia]]] = ???
 
       def channelInfo(id: YtbChannelID): F[Channel] = {
-        // c.expect[Json](channelInfoReq(root)(id))
-        c.expect(channelInfoReq(root)(id))(jsonOf[F, Channel])
+        c.expect[Channel](channelInfoReq(root)(id))
       }
 
       def searchChannels(query: String): F[List[Channel]] = ???

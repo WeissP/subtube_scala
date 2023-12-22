@@ -1,7 +1,7 @@
 package com.jb.algebras
 
-import com.jb.domain.*
 import cats.data.NonEmptyList
+import com.jb.domain.*
 
 trait YoutubeQueryAlg[F[_]] {
   def videosByChannel(

@@ -8,9 +8,6 @@ import sttp.tapir.*
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.pickler.*
 
-// opaque type T = String :| Alphanumeric & FixedLength[1]
-// object T extends RefinedTypeOps[String, Alphanumeric & FixedLength[1], T]
-
 opaque type YtbChannelID = String :| FixedLength[24]
 object YtbChannelID extends RefinedTypeOps[String, FixedLength[24], YtbChannelID]
 
@@ -20,7 +17,11 @@ object YtbVideoID extends RefinedTypeOps[String, FixedLength[11], YtbVideoID]
 opaque type Continuation = NonEmptyString
 object Continuation extends RefinedTypeOps[String, Not[Empty], Continuation]
 
-case class Thumbnail(height: Int :| Positive, width: Int :| Positive, quality: String)
+case class Thumbnail(
+    height: Int :| Positive,
+    width: Int :| Positive,
+    url: String,
+)
 
 case class Channel(
     id: YtbChannelID,
@@ -29,12 +30,11 @@ case class Channel(
     @description("Number of subscribtions")
     subCount: Int :| Positive,
     @description("Number of videos")
-    videoCount: Int :| Positive,
     thumbnails: List[Thumbnail],
 )
 
 case class ChannelMeta(
-    cachedAt: UnixTS,
+    cachedAt: CachedAt,
     intro: Option[NonEmptyString],
 )
 

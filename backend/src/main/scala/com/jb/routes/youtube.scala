@@ -1,50 +1,63 @@
 package com.jb.routes.youtube
 
 import cats.effect.IO
+import cats.effect.kernel.Async
 import com.jb.domain.*
 import com.jb.domain.schemas.given
-import com.jb.routes.{v1}
+import com.jb.programs.Programs
+import com.jb.routes.{queryParam, v1}
 import sttp.model.StatusCode
 import sttp.tapir.*
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.pickler.*
 import sttp.tapir.server.ServerEndpoint
-import com.jb.routes.queryParam
-import com.jb.programs.Programs
-import cats.effect.kernel.Async
 
-private val base = v1.in("youtube")
+private val youtube = v1.in("youtube")
 
-val tag = {
-  base
-    .in("tag")
-    .in(path[MediaTag]("tag"))
-    .in(queryParam.mediaSortOrder)
+private object tag {
+  val base = youtube.in("tag").in(path[MediaTag]("tag"))
+  val videos = base
+    .in("videos")
     .in(queryParam.cacheRefreshThreshold)
     .in(queryParam.pagination)
     .in(queryParam.allowedMediaSources)
     .in(queryParam.allowedTaggingMethods)
     .out(jsonBody[List[MediaInfo[YoutubeMedia]]])
-    .description("Return videos of given tag")
+    .description("Return videos of the given tag")
+
+  val channels = base
+    .in("channels")
+    .in(queryParam.cacheRefreshThreshold)
+    .in(queryParam.pagination)
+    .out(jsonBody[List[ChannelInfo]])
+    .description("Return channels of the given tag")
 }
 
-private val channel = {
-  base
-    .in("channel")
-    .in(path[YtbChannelID]("channel_id"))
-    .out(jsonBody[ChannelInfo])
-}
+private object channel {
+  val base = youtube.in("channel")
+  val withID = base.in(path[YtbChannelID]("channel_id"))
 
-private val searchChannel = {
-  base
-    .in("search" / "channel")
+  val info = withID.out(jsonBody[ChannelInfo])
+
+  val videos = withID
+    .in("videos")
+    .in(queryParam.mediaSortOrder)
+    .in(queryParam.cacheRefreshThreshold)
+    .in(queryParam.pagination)
+    .out(jsonBody[List[MediaInfo[YoutubeMedia]]])
+    .description("Return videos of the given channel")
+
+  val search = base
+    .in("search")
     .in(query[String]("query"))
     .out(jsonBody[List[ChannelInfo]])
     .description("Return a list of ChannelInfo with respect to the given query")
 }
 
 def endpoints(programs: Programs[IO]): List[ServerEndpoint[Any, IO]] = List(
-  tag.serverLogicSuccess(_ => ???),
-  channel.serverLogicSuccess(programs.getChannelInfo.channelInfo),
-  searchChannel.serverLogicSuccess(_ => ???),
+  tag.videos.serverLogicSuccess(_ => ???),
+  tag.channels.serverLogicSuccess(_ => ???),
+  channel.info.serverLogicSuccess(programs.getChannelInfo.channelInfo),
+  channel.videos.serverLogicSuccess(_ => ???),
+  channel.search.serverLogicSuccess(_ => ???),
 )

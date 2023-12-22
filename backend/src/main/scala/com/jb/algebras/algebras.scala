@@ -2,8 +2,8 @@ package com.jb.algebras
 
 import cats.effect.kernel.Async
 import com.jb.algebras.youtube.Invidious
-import com.jb.resources.AppResources
 import com.jb.config.AppConfig
+import com.jb.resources.AppResources
 import org.http4s.client.Client
 
 sealed abstract class Algebras[F[_]] private (

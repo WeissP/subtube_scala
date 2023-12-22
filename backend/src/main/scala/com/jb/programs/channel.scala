@@ -1,24 +1,20 @@
 package com.jb.programs
 
-import com.jb.algebras.YoutubeQueryAlg
-import cats.effect.kernel.Async
-import com.jb.domain.ChannelInfo
-import com.jb.domain.YtbChannelID
-import cats.Monad
-import cats.MonadThrow
-import cats.Applicative
-import cats.Functor
-import com.jb.domain.ChannelMeta
-import com.jb.domain.UnixTS
+import cats.effect.kernel.{Async, Clock}
+import cats.syntax.all._
+import cats.{Applicative, Functor, Monad, MonadThrow}
+import com.jb.algebras.{Algebras, YoutubeQueryAlg}
+import com.jb.domain.{CachedAt, ChannelInfo, ChannelMeta, UnixTS, YtbChannelID}
 import io.github.iltotore.iron.*
-import com.jb.algebras.Algebras
 
 final case class GetChannelInfo[F[_]: Async: MonadThrow: Functor](
     yqa: YoutubeQueryAlg[F],
 ) {
   def channelInfo(id: YtbChannelID): F[ChannelInfo] = {
-    val ch = yqa.channelInfo(id)
-    Functor[F].map(ch)(ChannelInfo(_, ChannelMeta(UnixTS(1), None)))
+    for {
+      ch <- yqa.channelInfo(id)
+      c <- CachedAt.now[F]
+    } yield ChannelInfo(ch, ChannelMeta(c, None))
   }
 }
 

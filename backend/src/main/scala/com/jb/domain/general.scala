@@ -2,11 +2,11 @@ package com.jb.domain
 
 import cats.Functor
 import cats.effect.kernel.Clock
-import cats.syntax.all._
+import cats.syntax.all.*
 import com.jb.domain.integration.pickle.given
 import com.jb.domain.integration.upickle.given
-import io.github.iltotore.iron._
-import io.github.iltotore.iron.constraint.all._
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
 import io.github.iltotore.iron.constraint.any.DescribedAs
 import sttp.tapir.EndpointIO.annotations.query
 import sttp.tapir.Schema

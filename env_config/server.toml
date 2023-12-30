@@ -1,5 +1,5 @@
 [[env]]
-name = "ST_FRONT_PUBLIC"
+name = "ST_FRONTEND"
 eval = "$PRJ_ROOT/frontend/dist"
 
 [[env]]
@@ -7,18 +7,13 @@ name = "ST_SERVER_PORT"
 value = "9090"
 
 [[env]]
-name = "ST_SERVER_SECRET"
-value = "2a4855f2c950a0e6167d80059e657647b70231529bec3015a56188a387f956e8cdf6277e06f5a4c335e9782971b984e3feb600f4a19acf536240f51a16560575"
-
-# put log into terminal is fine for now
-# [[env]]
-# name = "MS_LOG_DIR"
-# eval = "$PRJ_ROOT/logs/backend"
+name = "ST_INVIDIOUS_ROOT_URL"
+value = "https://invidious.nerdvpn.de"
 
 [serviceGroups.svr]
 description = "server and database"
 [serviceGroups.svr.services.server]
 command = "mill backend.run"
-# [serviceGroups.svr.services.database]
-# command = "postgres"
+[serviceGroups.svr.services.database]
+command = "postgres"
 

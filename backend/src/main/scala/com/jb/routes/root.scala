@@ -2,7 +2,8 @@ package com.jb.routes
 
 import cats.effect.IO.asyncForIO
 import cats.effect.*
-import cats.syntax.all._
+import cats.syntax.all.*
+import com.jb.config.*
 import com.jb.algebras.Algebras
 import com.jb.config.AppConfig
 import com.jb.domain.*
@@ -11,9 +12,11 @@ import com.jb.programs.Programs
 import com.jb.routes.youtube.tag
 import io.github.iltotore.iron.*
 import org.http4s.ember.server.EmberServerBuilder
+import org.http4s.server.middleware.CORS
 import org.http4s.server.{Router, Server}
 import sttp.tapir.Schema.annotations.description
 import sttp.tapir.*
+import sttp.tapir.files.*
 import sttp.tapir.generic.Configuration
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.pickler.*
@@ -53,6 +56,7 @@ object queryParam {
 }
 
 sealed abstract class Endpoints private (
+    c: ServerConfig,
     programs: Programs[IO],
 ) {
   val apiEndpoints = youtube.endpoints(programs)
@@ -62,23 +66,31 @@ sealed abstract class Endpoints private (
       .fromServerEndpoints[IO](apiEndpoints, "subtube", "1.0.0")
   }
 
-  val all = apiEndpoints ++ docEndpoints
+  val frontend = staticFilesGetServerEndpoint[IO](emptyInput)(c.frontend)
+
+  val all = apiEndpoints ++ docEndpoints :+ frontend
 }
 
 object Endpoints {
-  def make(programs: Programs[IO]) = new Endpoints(programs) {}
+  def make(c: ServerConfig, programs: Programs[IO]) = new Endpoints(c, programs) {}
 }
 
 def httpServer(
     c: AppConfig,
     endpoints: Endpoints,
 ): Resource[IO, Server] = {
-  val appRoutes = Http4sServerInterpreter[IO](serverOptions).toRoutes(endpoints.all)
+  val appRoutes =
+    Http4sServerInterpreter[IO](serverOptions).toRoutes(endpoints.all)
+
+  val routes = c.env.appEnv match {
+    case AppEnvironment.Local      => CORS.policy.withAllowOriginAll(appRoutes)
+    case AppEnvironment.Production => appRoutes
+  }
 
   EmberServerBuilder
     .default[IO]
-    .withHost(c.host)
-    .withPort(c.port)
-    .withHttpApp(Router("/" -> appRoutes).orNotFound)
+    .withHost(c.server.host)
+    .withPort(c.server.port)
+    .withHttpApp(Router("/" -> routes).orNotFound)
     .build
 }

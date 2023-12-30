@@ -1,7 +1,7 @@
 package com.jb.domain
 
-import io.github.iltotore.iron._
-import io.github.iltotore.iron.constraint.all._
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
 import io.github.iltotore.iron.constraint.any.DescribedAs
 import sttp.tapir.Schema.annotations.description
 import sttp.tapir.*
@@ -16,6 +16,12 @@ object YtbVideoID extends RefinedTypeOps[String, FixedLength[11], YtbVideoID]
 
 opaque type Continuation = NonEmptyString
 object Continuation extends RefinedTypeOps[String, Not[Empty], Continuation]
+
+enum FetchState {
+  case Init
+  case Done
+  case InProgress(cont: Continuation)
+}
 
 case class Thumbnail(
     height: Int :| Positive,

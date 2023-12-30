@@ -55,9 +55,9 @@ private object channel {
 }
 
 def endpoints(programs: Programs[IO]): List[ServerEndpoint[Any, IO]] = List(
-  tag.videos.serverLogicSuccess(_ => ???),
+  tag.videos.serverLogicSuccess(programs.fetchCacheVideos.videosByTag),
   tag.channels.serverLogicSuccess(_ => ???),
   channel.info.serverLogicSuccess(programs.getChannelInfo.channelInfo),
-  channel.videos.serverLogicSuccess(_ => ???),
+  channel.videos.serverLogicSuccess(programs.fetchCacheVideos.videosByChannel),
   channel.search.serverLogicSuccess(_ => ???),
 )

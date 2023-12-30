@@ -4,3 +4,6 @@ package = "scalafmt"
 [[commands]]
 package = "scala-cli"
 
+[[commands]]
+package = "flyway"
+

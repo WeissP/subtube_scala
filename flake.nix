@@ -13,7 +13,10 @@
         };
         jdk = pkgs.jdk19;
         basic = {
-          imports = map pkgs.devshell.importTOML [ ./env_config/server.toml ];
+          imports = map pkgs.devshell.importTOML [
+            ./env_config/server.toml
+            ./env_config/db.toml
+          ];
           name = "subtube";
           packages = [ jdk (pkgs.metals.override { jre = jdk; }) ];
           commands = [{ package = pkgs.mill.override { jre = jdk; }; }];

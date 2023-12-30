@@ -15,6 +15,7 @@ import org.http4s.server.Router
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import sttp.tapir.server.http4s.Http4sServerInterpreter
+import com.jb.migrate.migrateDb
 
 implicit def logger: Logger[IO] = Slf4jLogger.getLogger[IO]
 
@@ -22,6 +23,7 @@ object Main extends ResourceApp.Forever {
   def run(args: List[String]): Resource[IO, Unit] = {
     for {
       c <- Resource.eval(appConfig.load[IO])
+      _ <- migrateDb(c.db, c.env)
       r <- AppResources.make[IO](c)
       algebras = Algebras.make[IO](r.client, c)
       programs = Programs.make[IO](algebras)

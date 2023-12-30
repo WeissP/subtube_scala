@@ -42,7 +42,7 @@ CREATE TABLE ytb_channel (
     description text NOT NULL,
     sub_count integer NOT NULL,
     introduction text,
-    cached_at timestamptz NOT NULL,
+    cached_at timestamp NOT NULL,
     updated_at timestamptz NOT NULL DEFAULT now()
 );
 SELECT trigger_updated_at('"ytb_channel"');
@@ -59,7 +59,7 @@ CREATE TABLE ytb_video (
     video_title text NOT NULL,
     video_length integer NOT NULL,
     description text NOT NULL,
-    published timestamptz NOT NULL,
+    published timestamp NOT NULL,
     updated_at timestamptz NOT NULL DEFAULT now()
 );
 SELECT trigger_updated_at('"ytb_video"');

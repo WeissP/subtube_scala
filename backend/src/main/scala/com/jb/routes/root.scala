@@ -85,6 +85,7 @@ def httpServer(
   val routes = c.env.appEnv match {
     case AppEnvironment.Local      => CORS.policy.withAllowOriginAll(appRoutes)
     case AppEnvironment.Production => appRoutes
+    case AppEnvironment.Testing    => appRoutes
   }
 
   EmberServerBuilder

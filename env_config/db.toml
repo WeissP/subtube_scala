@@ -33,6 +33,10 @@ eval = 'jdbc:postgresql://localhost:$PGPORT/$DBNAME'
 name = "ST_DATABASE_MIGRATION_DIR"
 eval = '$PRJ_ROOT/backend/src/main/resources/db'
 
+[[env]]
+name = "ST_DATABASE_MIGRATION_MOCK_DIR"
+eval = '$PRJ_ROOT/backend/src/main/resources/mockdata/db'
+
 [[commands]]
 name = "setup-db"
 command = '''

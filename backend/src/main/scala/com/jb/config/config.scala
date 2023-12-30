@@ -33,7 +33,8 @@ final case class DatabaseConfig(
     user: Option[String],
     password: Option[Secret[String]],
     migrationsTable: String,
-    migrationsLocation: String :| Not[Empty],
+    migrationDir: String :| Not[Empty],
+    migrationMockDir: Option[String :| Not[Empty]],
 )
 
 val databaseConfig: ConfigLoader[DatabaseConfig] = {
@@ -43,6 +44,7 @@ val databaseConfig: ConfigLoader[DatabaseConfig] = {
     env("PGPASSWORD").as[String].secret.option,
     env("ST_DATABASE_MIGRATIONS_TABLE").as[String].default("flyway"),
     env("ST_DATABASE_MIGRATION_DIR").as[String :| Not[Empty]],
+    env("ST_DATABASE_MIGRATION_MOCK_DIR").as[String :| Not[Empty]].option,
   ).parMapN(DatabaseConfig.apply)
 }
 
@@ -51,7 +53,7 @@ final case class YoutubeQueryConfig(
     invidiousRootFallback: Option[Uri],
 )
 
-private val youtubeQueryConfigConfig: ConfigLoader[YoutubeQueryConfig] = {
+val youtubeQueryConfigConfig: ConfigLoader[YoutubeQueryConfig] = {
   (
     env("ST_INVIDIOUS_ROOT_URL").as[Uri],
     env("ST_INVIDIOUS_ROOT_URL_FALLBACK").as[Uri].option,
@@ -71,7 +73,7 @@ final case class ServerConfig(
     port: Port,
     frontend: String,
 )
-private val serverConfig: ConfigLoader[ServerConfig] = {
+val serverConfig: ConfigLoader[ServerConfig] = {
   (
     env("ST_SERVER_HOST").as[Host].default(Host.fromString("localhost").get),
     env("ST_SERVER_PORT").as[Port],

@@ -20,6 +20,8 @@ import sttp.tapir.Schema.annotations.{
 import sttp.tapir.codec.iron.*
 import sttp.tapir.generic.Configuration
 import sttp.tapir.json.pickler.Pickler
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 type UnsignedInt = Int :| GreaterEqual[0]
 object UnsignedInt extends RefinedTypeOps[Int, GreaterEqual[0], UnsignedInt]
@@ -31,6 +33,11 @@ opaque type CachedAt = Long :| Positive
 object CachedAt extends RefinedTypeOps[Long, Positive, CachedAt] {
   def now[F[_]: Functor](using c: Clock[F]): F[CachedAt] =
     c.realTime.map(_.toSeconds.refine)
+}
+extension (c: CachedAt) {
+  def toDateTime: LocalDateTime = {
+    LocalDateTime.ofEpochSecond(c, 0, ZoneOffset.UTC)
+  }
 }
 
 type NonEmptyString = String :| Not[Empty]

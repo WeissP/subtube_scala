@@ -59,6 +59,9 @@ object Invidious {
   }
   given QueryParamEncoder[Continuation] = QueryParamEncoder.fromShow
 
+  private val videoFields =
+    "title,videoId,authorId,descriptionHtml,videoThumbnails,published,lengthSeconds"
+
   def client[F[_]: Async: Logger](
       c: Client[F],
       cfg: YoutubeQueryConfig,
@@ -72,7 +75,7 @@ object Invidious {
     ): F[VideosWithCont] = {
       given EntityDecoder[F, VideosWithCont] = jsonOf[F, VideosWithCont]
       val uri = root / "channels" / id.value / "videos"
-        +? ("fields", "continuation,videos(title,videoId,authorId,descriptionHtml,videoThumbnails,published,lengthSeconds)")
+        +? ("fields", s"continuation,videos(${videoFields})")
         +? ("sort_by", order.toString().toLowerCase())
       fetchState match {
         case FetchState.Init => c.expect[VideosWithCont](uri)
@@ -124,6 +127,15 @@ object Invidious {
           .map(_.flatten)
       }
 
+      def videoInfo(id: YtbVideoID): F[YoutubeMedia] = {
+        val req = Request[F](
+          method = Method.GET,
+          uri = root / "videos" / id.value +? ("fields", videoFields),
+          headers = Headers(Accept(MediaType.application.json)),
+        )
+        c.expect[YoutubeMedia](req)
+      }
+
       def channelInfo(id: YtbChannelID): F[Channel] = {
         val req = Request[F](
           method = Method.GET,
@@ -135,7 +147,6 @@ object Invidious {
       }
 
       def searchChannels(query: String): F[List[Channel]] = ???
-
     }
   }
 }

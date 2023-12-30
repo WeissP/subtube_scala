@@ -9,6 +9,7 @@ trait YoutubeQueryAlg[F[_]] {
       order: MediaSortOrder,
       minNum: Int,
   ): F[List[YoutubeMedia]]
+  def videoInfo(id: YtbVideoID): F[YoutubeMedia]
   def channelInfo(id: YtbChannelID): F[Channel]
   def searchChannels(query: String): F[List[Channel]]
 }

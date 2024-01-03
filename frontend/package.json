@@ -10,8 +10,8 @@
     "preview": "vite preview",
     "watch": "watch 'npm run build' $PRJ_ROOT/frontend/src",
     "prepare": "npm run smui-theme-light && npm run smui-theme-dark",
-    "smui-theme-light": "smui-theme compile dist/css/smui.css -i src/theme",
-    "smui-theme-dark": "smui-theme compile dist/css/smui-dark.css -i src/theme/dark"
+    "smui-theme-light": "smui-theme compile css/smui.css -i src/theme",
+    "smui-theme-dark": "smui-theme compile css/smui-dark.css -i src/theme/dark"
   },
   "devDependencies": {
     "@material/elevation": "^14.0.0",

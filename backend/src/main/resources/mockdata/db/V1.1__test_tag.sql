@@ -1,15 +1,14 @@
-INSERT INTO tag (tag_name) VALUES ('test');
+INSERT INTO tag (tag_name, introduction) VALUES ('test', 'this tag is just for testing');
 
 INSERT INTO ytb_channel (ytb_channel_id, channel_name, description, sub_count, introduction, cached_at)
 VALUES (
     'UCVjlpEjEY9GpksqbEesJnNA',
-    'Not a chef, I just complain.',
+    'mrnigelng',
     'Not a chef, I just complain.<br><br>For general enquiries:<br>Matthew Harvey<br>MHARV@wmeagency.com<br><br>For brand enquiries:<br>Allison Howard<br>ALH@wmeagency.com<br><br>',
     8660000,
     'Hiyaa',
-    '2023-12-30 10:32:37'
+    1704208579                  --Tue Jan 02 2024 15:16:19 GMT+0000
 );
-INSERT INTO tag_ytb_channel VALUES (1, 'UCVjlpEjEY9GpksqbEesJnNA');
 
 INSERT INTO ytb_channel (ytb_channel_id, channel_name, description, sub_count, introduction, cached_at)
 VALUES (
@@ -18,9 +17,8 @@ VALUES (
     'FAN MAIL: Community@timeghost.tv<br>SPONSORSHIP: worldwartwo@intheblackmedia.com<br><br>World War Two dives into the history of one of the most devastating wars in human history. Indy Neidell, Spartacus Olsson and their team of dedicated historians cover the events of World War Two week by week in realtime. Additionally, we take an in-depth look at the war against humanity, key figures in all camps, military hardware, impact on culture, military strategies and life at the home fronts or under occupation.<br><br>Patreon: <a href="https://bit.ly/WW2_CH">bit.ly/WW2_CH</a><br>TimeGhost Channel: <a href="/channel/UCLfMmOriSyPbd5JhHpnj4Ng">youtube.com/channel/UCLfMmOriSyPbd5JhHpnj4Ng</a><br><br>CREDITS<br>A TimeGhost chronological documentary produced by OnLion Entertainment GmbH.<br>Lead writer and host: Indy Neidell<br>Produced and Directed by: Spartacus Olsson and Astrid Deinhard<br>Executive Producers: Bodo Rittenauer, Astrid Deinhard, Indy Neidell, Spartacus Olsson<br>Creative Director: Wieke Kapteijns<br>Creative Producer: Marek Kamiński<br><br>Contains Archive material from Screenocean/Reuters.<br>',
     858000,
     'I Love History!',
-    '2024-01-01 00:32:37'
+    1704122179                  --Mon Jan 01 2024 15:16:19 GMT+0000
 );
-INSERT INTO tag_ytb_channel VALUES (1, 'UCP1AejCL4DA7jYkZAELRhHQ');
 
 INSERT INTO ytb_video (
   ytb_video_id,
@@ -35,7 +33,7 @@ INSERT INTO ytb_video (
   'Will Brutus Stab MI5 in the Back? - WW2 Documentary Special',
   689,
   'The problem with some Double Agents is that it’s very hard to trust them. After the mercurial Polish pilot and spymaster Roman Czerniawski offers his service to the Allies, MI5 and Double Cross worry that their new man will turn out to be a Triple Agent! But they’ll have to learn to trust agent Brutus because he might just hold the key to success in Operation Fortitude.\n\nJoin us on Patreon: <a href="https://www.patreon.com/TimeGhostHistory">www.patreon.com/TimeGhostHistory</a>\nOr join the TimeGhost Army directly at: <a href="https://timeghost.tv/signup/">timeghost.tv/signup/</a>\n\nCheck out our TimeGhost History YouTube channel: <a href="/c/timeghost">youtube.com/c/timeghost</a>\nBetween 2 Wars: <a href="/playlist?list=PLrG5J-K5AYAU1R-HeWSfY2D1jy_sEssNG">   • Between 2 Wars  </a>\n\nFollow WW2 Day by Day on Instagram: @ww2_day_by_day\nFollow TimeGhost History on Instagram: @timeghosthistory \nLike us on Facebook: <a href="https://www.facebook.com/TimeGhostHistory/">www.facebook.com/TimeGhostHistory/</a>\n\nHosted by: Astrid Deinhard\nDirector: Astrid Deinhard\nProducers: Astrid Deinhard and Spartacus Olsson\nExecutive Producers: Astrid Deinhard, Indy Neidell, Spartacus Olsson\nCreative Producer: Marek Kamiński\nCommunity Management: Ian Sowden\nWritten by: Astrid Deinhard\nResearch by: Astrid Deinhard\nMap animations by: Daniel Weiss\nMap research by: Sietse Kenter\nEdited by: Iryna Dulka\nArtwork and color grading by: Mikołaj Uchman\nSound design by: Marek Kamiński\nColorizations by: \nMikołaj Uchman\n\nSource literature list: <a href="http://bit.ly/WW2sources">bit.ly/WW2sources</a>\n\nArchive footage: Screenocean/Reuters - <a href="https://www.screenocean.com/">www.screenocean.com/</a>\n\nA TimeGhost chronological documentary produced by OnLion Entertainment GmbH.',
-  '2023-10-18 00:00:00'
+  1697587200
 );
 
 INSERT INTO ytb_video (
@@ -83,7 +81,5 @@ INSERT INTO ytb_video (
 
 You can view this and other resources using free/libre software at <a href="https://emacsconf.org/2023/talks/emms">emacsconf.org/2023/talks/emms</a> .                                                                                
 This video is available under the terms of the Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) license.',
-  '2023-12-09 00:00:00'
+  1702080000
 );
-
-INSERT INTO tag_ytb_video VALUES (1, 'kII413hkyis');

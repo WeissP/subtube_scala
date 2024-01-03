@@ -1,22 +1,26 @@
 package com.jb.config
 
+import io.github.iltotore.iron.autoRefine
 import cats.data.NonEmptyList
 import cats.effect.kernel.Async
 import cats.syntax.all.*
-import ciris.{http4s as _, *}
 import ciris.http4s.given
+import ciris.{http4s as _, *}
 import com.comcast.ip4s.{Host, Port, port}
+import enumeratum.{CirisEnum, Enum, EnumEntry}
 import io.github.iltotore.iron.ciris.given
 import io.github.iltotore.iron.constraint.all.*
 import io.github.iltotore.iron.constraint.string.StartWith
-import io.github.iltotore.iron.{cats as _, ciris as _, *}
+import io.github.iltotore.iron.given
+import io.github.iltotore.iron.{:|, RefinedTypeOps, refine}
 import org.http4s.Uri
 import org.http4s.syntax.all.uri
-import enumeratum.{CirisEnum, Enum, EnumEntry}
 import org.log4s.LogLevel
+import com.jb.config.AppEnvironment.Local
+import com.jb.config.AppEnvironment.Testing
+import com.jb.config.AppEnvironment.Production
 
 sealed trait AppEnvironment extends EnumEntry
-
 object AppEnvironment extends Enum[AppEnvironment] with CirisEnum[AppEnvironment] {
   case object Local extends AppEnvironment
   case object Testing extends AppEnvironment
@@ -29,18 +33,24 @@ type ConfigLoader[T] = ConfigValue[Effect, T]
 type JDBCUrl = String :| StartWith["jdbc:"]
 
 final case class DatabaseConfig(
-    url: JDBCUrl,
-    user: Option[String],
+    user: String,
+    host: String,
+    port: Int,
+    dbName: String,
     password: Option[Secret[String]],
     migrationsTable: String,
     migrationDir: String :| Not[Empty],
     migrationMockDir: Option[String :| Not[Empty]],
-)
+) {
+  val jdbcUrl: JDBCUrl = s"jdbc:postgresql://${host}:${port}/${dbName}".refine
+}
 
 val databaseConfig: ConfigLoader[DatabaseConfig] = {
   (
-    env("ST_DATABASE_JDBC_URL").as[JDBCUrl],
-    env("PGUSER").as[String].option,
+    env("PGUSER").as[String].default("postgres"),
+    env("PGHOST").as[String],
+    env("PGPORT").as[Int],
+    env("DBNAME").as[String],
     env("PGPASSWORD").as[String].secret.option,
     env("ST_DATABASE_MIGRATIONS_TABLE").as[String].default("flyway"),
     env("ST_DATABASE_MIGRATION_DIR").as[String :| Not[Empty]],

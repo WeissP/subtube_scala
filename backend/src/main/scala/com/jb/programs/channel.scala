@@ -7,6 +7,7 @@ import com.jb.algebras.{Algebras, YoutubeQueryAlg}
 import com.jb.domain.*
 import io.github.iltotore.iron.*
 import org.typelevel.log4cats.Logger
+import java.util.UUID
 
 final case class GetChannelInfo[F[_]: Async: MonadThrow: Functor](
     yqa: YoutubeQueryAlg[F],
@@ -36,7 +37,7 @@ final case class FetchCacheVideos[F[_]: Async: MonadThrow: Functor: Logger](
       .drop(pag.offset)
       .take(pag.limit)
       .map(
-        MediaInfo(_, MediaMeta(MediaID(0), MediaSource.Youtube, c, None)),
+        MediaInfo(_, MediaMeta(UUID.randomUUID(), MediaSource.Youtube, c, None)),
       )
   }
 
@@ -46,7 +47,7 @@ final case class FetchCacheVideos[F[_]: Async: MonadThrow: Functor: Logger](
       pag: Pagination,
       mediaSources: List[MediaSource],
       taggingMethods: List[TaggingMethod],
-  ): F[List[MediaInfo[YoutubeMedia]]] = {
+  ): F[List[MediaInfoWithTag[YoutubeMedia]]] = {
     if (
       mediaSources.contains(MediaSource.Youtube)
       && taggingMethods.contains(TaggingMethod.YoutubeChannel)
@@ -64,7 +65,10 @@ final case class FetchCacheVideos[F[_]: Async: MonadThrow: Functor: Logger](
           cacheRefreshThreshold,
           pag,
         )
-      } yield (chai ++ uncle).sortBy(-_.media.published.value).take(pag.limit)
+      } yield (chai ++ uncle)
+        .sortBy(-_.media.published.value)
+        .take(pag.limit)
+        .map(MediaInfoWithTag(_, TagMeta(List(TaggingMethod.YoutubeChannel))))
 
     } else {
       List().pure

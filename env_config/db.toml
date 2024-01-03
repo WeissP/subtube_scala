@@ -14,20 +14,24 @@ name = "PGPORT"
 value = "9091"
 
 [[env]]
+name = "PGHOST"
+value = "localhost"
+
+[[env]]
 name = "PGUSER"
 eval = "${USER:-$(id -nu)}"
 
+# [[env]]
+# name = "ST_DATABASE_URL"
+# eval = 'postgres:///$DBNAME?port=$PGPORT\&host=$PGHOST'
+
 [[env]]
 name = "ST_DATABASE_URL"
-eval = 'postgres:///$DBNAME?port=$PGPORT\&host=$PGHOST'
-
-[[env]]
-name = "ST_DATABASE_URL_LOCALHOST"
 eval = 'postgres://$PGUSER@localhost:$PGPORT/$DBNAME'
 
-[[env]]
-name = "ST_DATABASE_JDBC_URL"
-eval = 'jdbc:postgresql://localhost:$PGPORT/$DBNAME'
+# [[env]]
+# name = "ST_DATABASE_JDBC_URL"
+# eval = 'jdbc:postgresql://localhost:$PGPORT/$DBNAME'
 
 [[env]]
 name = "ST_DATABASE_MIGRATION_DIR"
@@ -41,6 +45,7 @@ eval = '$PRJ_ROOT/backend/src/main/resources/mockdata/db'
 name = "setup-db"
 command = '''
 createdb  -h $PGDATA -p $PGPORT $DBNAME
+mill backend.migrate
           '''
 
 [[commands]]

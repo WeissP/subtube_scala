@@ -3,7 +3,7 @@ package com.jb.domain.integration
 import _root_.upickle.default.{Reader as UpickleReader, Writer as UpickleWriter}
 import io.github.iltotore.iron.IronType
 import sttp.tapir.Schema
-import sttp.tapir.json.pickler.{Pickler, TapirPickle}
+import sttp.tapir.json.pickler.{Pickler, PicklerConfiguration, TapirPickle}
 
 import scala.compiletime.summonInline
 
@@ -26,6 +26,11 @@ object pickle {
   )
 //  given[A,C](using ev: ClassTag[A]):ClassTag[IronType[A, C]]  = ev.asInstanceOf[ClassTag[IronType[A, C]]]
 //  given[A,C]: Pickler[IronType[A, C]] = Pickler.derived[IronType[A, C]]
-  given [A, C](using picker: Pickler[IronType[A, C]]): Pickler[Option[IronType[A, C]]] =
+  given [A, C](using
+      picker: Pickler[IronType[A, C]],
+  ): Pickler[Option[IronType[A, C]]] =
     picker.asOption
 }
+
+given customConfiguration: PicklerConfiguration =
+  PicklerConfiguration.default.withSnakeCaseMemberNames

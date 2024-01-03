@@ -6,14 +6,15 @@ import cats.effect.*
 import cats.effect.kernel.{Async, Resource}
 import cats.syntax.all.*
 import com.jb.algebras.YoutubeQueryAlg
-import com.jb.domain.*
 import com.jb.config.YoutubeQueryConfig
+import com.jb.domain.*
 import io.circe.generic.auto.*
 import io.circe.{Decoder, HCursor, Json}
 import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.circe.given
 import io.github.iltotore.iron.constraint.all.*
-import io.github.iltotore.iron.{cats as _, circe as _, *}
+import io.github.iltotore.iron.given
+import io.github.iltotore.iron.{:|, RefinedTypeOps, refine}
 import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.circe.jsonOf
 import org.http4s.client.Client
@@ -52,6 +53,7 @@ object Invidious {
   given Decoder[Channel] = new Decoder[Channel] {
     final def apply(c: HCursor): Decoder.Result[Channel] = (
       c.get[YtbChannelID]("authorId"),
+      c.get[String]("author"),
       c.get[String]("descriptionHtml"),
       c.get[Int :| Positive]("subCount"),
       c.get[List[Thumbnail]]("authorThumbnails"),
@@ -140,7 +142,7 @@ object Invidious {
         val req = Request[F](
           method = Method.GET,
           uri =
-            root / "channels" / id.value +? ("fields", "authorId,descriptionHtml,subCount,authorThumbnails"),
+            root / "channels" / id.value +? ("fields", "author,authorId,descriptionHtml,subCount,authorThumbnails"),
           headers = Headers(Accept(MediaType.application.json)),
         )
         c.expect[Channel](req)

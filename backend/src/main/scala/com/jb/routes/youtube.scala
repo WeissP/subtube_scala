@@ -2,13 +2,13 @@ package com.jb.routes.youtube
 
 import cats.effect.IO
 import cats.effect.kernel.Async
+import com.jb.domain.MediaTag.given
+import com.jb.domain.YtbChannelID.given
 import com.jb.domain.*
-import com.jb.domain.schemas.given
 import com.jb.programs.Programs
 import com.jb.routes.{queryParam, v1}
 import sttp.model.StatusCode
 import sttp.tapir.*
-import sttp.tapir.generic.auto.*
 import sttp.tapir.json.pickler.*
 import sttp.tapir.server.ServerEndpoint
 
@@ -22,7 +22,7 @@ private object tag {
     .in(queryParam.pagination)
     .in(queryParam.allowedMediaSources)
     .in(queryParam.allowedTaggingMethods)
-    .out(jsonBody[List[MediaInfo[YoutubeMedia]]])
+    .out(jsonBody[List[MediaInfoWithTag[YoutubeMedia]]])
     .description("Return videos of the given tag")
 
   val channels = base

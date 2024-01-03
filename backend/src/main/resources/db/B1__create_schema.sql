@@ -20,52 +20,45 @@ $$
     end;
 $$ LANGUAGE plpgsql;
 
-CREATE TABLE tag
-(
-    tag_id serial PRIMARY KEY,
-    tag_name varchar(30) NOT NULL,
+CREATE TABLE tag (
+    tag_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    tag_name text UNIQUE NOT NULL,
+    introduction text,
     updated_at timestamptz NOT NULL DEFAULT now()
 );
 SELECT trigger_updated_at('"tag"');
 
-CREATE TABLE media
-(
-    media_id serial PRIMARY KEY,
-    introduction text,
-    updated_at timestamptz NOT NULL DEFAULT now()
-);
-SELECT trigger_updated_at('"media"');
-
 CREATE TABLE ytb_channel (
-    ytb_channel_id text PRIMARY KEY,
+    media_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    ytb_channel_id text UNIQUE NOT NULL,
     channel_name text NOT NULL,
     description text NOT NULL,
-    sub_count integer NOT NULL,
+    sub_count int4 NOT NULL,
     introduction text,
-    cached_at timestamp NOT NULL,
+    cached_at int8 NOT NULL,  -- unix timestamp
     updated_at timestamptz NOT NULL DEFAULT now()
 );
 SELECT trigger_updated_at('"ytb_channel"');
 
-CREATE TABLE tag_ytb_channel (
-    tag_id int REFERENCES tag (tag_id),
-    ytb_channel_id text REFERENCES ytb_channel (ytb_channel_id),
-    PRIMARY KEY (tag_id, ytb_channel_id)
-);
-
 CREATE TABLE ytb_video (
-    ytb_video_id text PRIMARY KEY,
+    media_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    ytb_video_id text UNIQUE NOT NULL,
     ytb_channel_id text NOT NULL,
     video_title text NOT NULL,
-    video_length integer NOT NULL,
+    video_length int4 NOT NULL,
     description text NOT NULL,
-    published timestamp NOT NULL,
+    published int8 NOT NULL,  -- unix timestamp
     updated_at timestamptz NOT NULL DEFAULT now()
 );
 SELECT trigger_updated_at('"ytb_video"');
 
-CREATE TABLE tag_ytb_video (
-    tag_id int REFERENCES tag (tag_id),
-    ytb_video_id text REFERENCES ytb_video (ytb_video_id),
-    PRIMARY KEY (tag_id, ytb_video_id)
+CREATE TYPE taggingmethod AS ENUM ('youtubevideo', 'youtubechannel');
+
+CREATE TABLE tag_media (
+    tag_id uuid REFERENCES tag (tag_id),
+    media_id uuid NOT NULL,
+    tagged_by taggingmethod NOT NULL,
+    updated_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (tag_id,media_id,tagged_by)
 );
+SELECT trigger_updated_at('"tag_media"');

@@ -3,11 +3,10 @@ package com.jb.routes
 import cats.effect.IO.asyncForIO
 import cats.effect.*
 import cats.syntax.all.*
-import com.jb.config.*
 import com.jb.algebras.Algebras
-import com.jb.config.AppConfig
+import com.jb.config.*
+import com.jb.domain.UnixTS.given
 import com.jb.domain.*
-import com.jb.domain.schemas.given
 import com.jb.programs.Programs
 import com.jb.routes.youtube.tag
 import io.github.iltotore.iron.*
@@ -18,7 +17,6 @@ import sttp.tapir.Schema.annotations.description
 import sttp.tapir.*
 import sttp.tapir.files.*
 import sttp.tapir.generic.Configuration
-import sttp.tapir.generic.auto.*
 import sttp.tapir.json.pickler.*
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.server.http4s.*
@@ -26,7 +24,7 @@ import sttp.tapir.server.model.ValuedEndpointOutput
 import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
 def myFailureResponse(m: String): ValuedEndpointOutput[_] =
-  ValuedEndpointOutput(jsonBody[MyFailure], MyFailure(m))
+  ValuedEndpointOutput(jsonBody[HttpErrMsg], HttpErrMsg(m))
 
 val serverOptions: Http4sServerOptions[IO] = {
   Http4sServerOptions.customiseInterceptors

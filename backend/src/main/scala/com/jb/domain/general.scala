@@ -5,96 +5,64 @@ import cats.effect.kernel.Clock
 import cats.syntax.all.*
 import com.jb.domain.integration.pickle.given
 import com.jb.domain.integration.upickle.given
-import io.github.iltotore.iron.*
+import enumeratum.EnumEntry.Snakecase
+import enumeratum.*
 import io.github.iltotore.iron.constraint.all.*
 import io.github.iltotore.iron.constraint.any.DescribedAs
+import io.github.iltotore.iron.given
+import io.github.iltotore.iron.skunk.*
+import io.github.iltotore.iron.skunk.given
+import io.github.iltotore.iron.{:|, RefinedTypeOps, refine}
+import skunk.*
+import skunk.codec.all.*
+import skunk.implicits.*
+import sttp.tapir.Codec.PlainCodec
 import sttp.tapir.EndpointIO.annotations.query
-import sttp.tapir.Schema
-import sttp.tapir.Schema.annotations.{
-  default,
-  description,
-  encodedExample,
-  encodedName,
-  validate,
-}
+import sttp.tapir.Schema.annotations.*
 import sttp.tapir.codec.iron.*
 import sttp.tapir.generic.Configuration
 import sttp.tapir.json.pickler.Pickler
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import sttp.tapir.{Codec as TapirCodec, FieldName, Schema, SchemaType}
+
+import java.time.{LocalDateTime, ZoneOffset}
+import java.util.UUID
+
+type NonEmptyString = String :| Not[Empty]
 
 type UnsignedInt = Int :| GreaterEqual[0]
 object UnsignedInt extends RefinedTypeOps[Int, GreaterEqual[0], UnsignedInt]
 
+type PositiveInt = Int :| Positive
+object PositiveInt
+    extends RefinedTypeOps[Int, Positive, PositiveInt]
+    with TapirCodecIron {
+  given Pickler[PositiveInt] = Pickler.derived
+}
+
 opaque type UnixTS = Long :| Positive
-object UnixTS extends RefinedTypeOps[Long, Positive, UnixTS]
+object UnixTS extends RefinedTypeOps[Long, Positive, UnixTS] with TapirCodecIron {
+  given (using s: Schema[UnixTS]): Schema[UnixTS] = {
+    s.description("UNIX Timestamp")
+  }
+  given Pickler[UnixTS] = Pickler.derived
+}
 
 opaque type CachedAt = Long :| Positive
-object CachedAt extends RefinedTypeOps[Long, Positive, CachedAt] {
+object CachedAt extends RefinedTypeOps[Long, Positive, CachedAt] with TapirCodecIron {
   def now[F[_]: Functor](using c: Clock[F]): F[CachedAt] =
     c.realTime.map(_.toSeconds.refine)
+
+  given skunk: Codec[CachedAt] = int8.refined[Positive]
+  given (using s: Schema[CachedAt]): Schema[CachedAt] = {
+    s.description("The last cached UNIX Timestamp")
+  }
+  given Pickler[CachedAt] = Pickler.derived
 }
 extension (c: CachedAt) {
   def toDateTime: LocalDateTime = {
     LocalDateTime.ofEpochSecond(c, 0, ZoneOffset.UTC)
   }
 }
-
-type NonEmptyString = String :| Not[Empty]
-opaque type MediaTag = NonEmptyString
-object MediaTag extends RefinedTypeOps[String, Not[Empty], MediaTag]
-
-opaque type MediaLength = Int :| Positive
-object MediaLength extends RefinedTypeOps[Int, Positive, MediaLength]
-
-opaque type MediaID = UnsignedInt
-object MediaID extends RefinedTypeOps[Int, GreaterEqual[0], MediaID]
-
-opaque type MediaTagID = UnsignedInt
-object MediaTagID extends RefinedTypeOps[Int, GreaterEqual[0], MediaTagID]
-
-enum MediaSource {
-  case Local
-  case Youtube
-}
-
-enum TaggingMethod {
-  case SingleMedia
-  case YoutubeChannel
-}
-
-enum MediaSortOrder {
-  case Newest
-  case Popular
-}
-
-class Media(
-    length: MediaLength,
-    title: String,
-    thumbnails: List[Thumbnail],
-)
-
-@description("The meta information of media")
-case class MediaMeta(
-    mediaID: MediaID,
-    @description("The source of the media")
-    source: MediaSource,
-    @description("The UNIX timestamp that the media info was cached")
-    cachedAt: CachedAt,
-    @description("Personal introduction of the media")
-    introduction: Option[NonEmptyString],
-)
-
-case class MediaInfo[M <: Media](
-    @description("The information of the media")
-    media: M,
-    @description(
-      "The meta information of the media, normally such information doesn't come from the media source, but from the backend server",
-    )
-    meta: MediaMeta,
-)
-
-case class MediaUpdate()
 
 case class Pagination(
     @query
@@ -109,4 +77,7 @@ case class Pagination(
     limit: Int :| Positive,
 )
 
-case class MyFailure(msg: String)
+case class HttpErrMsg(msg: String)
+object HttpErrMsg extends TapirCodecIron {
+  given Pickler[HttpErrMsg] = Pickler.derived
+}

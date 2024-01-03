@@ -48,7 +48,7 @@ final case class DatabaseConfig(
 val databaseConfig: ConfigLoader[DatabaseConfig] = {
   (
     env("PGUSER").as[String].default("postgres"),
-    env("PGHOST").as[String],
+    env("ST_PGHOST").as[String],
     env("PGPORT").as[Int],
     env("DBNAME").as[String],
     env("PGPASSWORD").as[String].secret.option,

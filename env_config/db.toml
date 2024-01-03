@@ -14,7 +14,7 @@ name = "PGPORT"
 value = "9091"
 
 [[env]]
-name = "PGHOST"
+name = "ST_PGHOST"
 value = "localhost"
 
 [[env]]

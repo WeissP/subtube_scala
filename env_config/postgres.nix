@@ -83,10 +83,16 @@ in {
   config = {
     packages = [ cfg.package setup-postgres start-postgres ];
 
-    env = [{
-      name = "PGDATA";
-      eval = "$PRJ_DATA_DIR/postgres";
-    }];
+    env = [
+      {
+        name = "PGDATA";
+        eval = "$PRJ_DATA_DIR/postgres";
+      }
+      {
+        name = "PGHOST";
+        eval = "$PGDATA";
+      }
+    ];
 
     devshell.startup.setup-postgres.text =
       lib.optionalString cfg.setupPostgresOnStartup ''

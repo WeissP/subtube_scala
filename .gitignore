@@ -15,6 +15,9 @@ project/local-plugins.sbt
 .sbt-scripted/
 local.sbt
 
+# mill specific
+out/
+
 # Bloop
 .bsp
 
@@ -40,4 +43,6 @@ metals.sbt
 /.direnv
 /.envrc
 /.data
+
+#
 

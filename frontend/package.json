@@ -1,0 +1,45 @@
+{
+  "name": "svelte-axum-project",
+  "description": "svelte front end with axum backend template",
+  "author": "Jas Bertovic",
+  "version": "0.4.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && cp -r css dist/",
+    "preview": "vite preview",
+    "watch": "watch 'npm run build' $PRJ_ROOT/frontend/src",
+    "prepare": "npm run smui-theme-light && npm run smui-theme-dark",
+    "smui-theme-light": "smui-theme compile dist/css/smui.css -i src/theme",
+    "smui-theme-dark": "smui-theme compile dist/css/smui-dark.css -i src/theme/dark"
+  },
+  "devDependencies": {
+    "@material/elevation": "^14.0.0",
+    "@mdi/js": "^7.3.67",
+    "@smui-extra/accordion": "^7.0.0-beta.15",
+    "@smui/button": "^7.0.0-beta.15",
+    "@smui/checkbox": "^7.0.0-beta.16",
+    "@smui/chips": "^7.0.0-beta.15",
+    "@smui/common": "^7.0.0-beta.15",
+    "@smui/dialog": "^7.0.0-beta.15",
+    "@smui/drawer": "^7.0.0-beta.15",
+    "@smui/fab": "^7.0.0-beta.15",
+    "@smui/icon-button": "^7.0.0-beta.15",
+    "@smui/layout-grid": "^7.0.0-beta.15",
+    "@smui/menu": "^7.0.0-beta.15",
+    "@smui/segmented-button": "^7.0.0-beta.16",
+    "@smui/tab": "^7.0.0-beta.16",
+    "@smui/tab-bar": "^7.0.0-beta.16",
+    "@smui/top-app-bar": "^7.0.0-beta.15",
+    "@sveltejs/vite-plugin-svelte": "^2.4.2",
+    "smui-theme": "^7.0.0-beta.15",
+    "svelte": "^4.0.5",
+    "vite": "^4.4.5"
+  },
+  "dependencies": {
+    "-": "^0.0.1",
+    "svelte-material-ui": "^7.0.0-beta.15",
+    "watch": "^1.0.2",
+    "yesvelte": "^0.0.2-next.213"
+  }
+}

@@ -10,6 +10,10 @@ value = "9090"
 name = "ST_INVIDIOUS_ROOT_URL"
 value = "https://invidious.nerdvpn.de"
 
+[[commands]]
+package = "nodejs_20"
+name = "npm"
+
 [serviceGroups.svr]
 description = "server and database"
 [serviceGroups.svr.services.server]

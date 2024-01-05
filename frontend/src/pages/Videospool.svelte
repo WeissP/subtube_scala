@@ -1,16 +1,14 @@
 <script lang="ts">
     import Videopreview from "./Videopreview.svelte";
     import Videodiaglog from "./Videodiaglog.svelte";
-    
-    export let pool;
+
+    let pool;
     let videodetail;
     import { onMount } from "svelte";
     import { Icon } from "@smui/icon-button";
     import { mdiClose } from "@mdi/js";
-    
 
     import LayoutGrid, { Cell } from "@smui/layout-grid";
-    
 
     import Fab from "@smui/fab";
 
@@ -27,29 +25,32 @@
     let open = false;
     let selected = "Nothing yet";
     let active = "Information";
-    
 </script>
 
-
-<Videodiaglog videodetail={videodetail} bind:open />
+<Videodiaglog {videodetail} bind:open />
 
 <!-- <div class="videopool-container"> -->
-{#if pool.videos && pool.videos && Array.isArray(pool.videos)}
-    <LayoutGrid>
-        {#each pool.videos as video, index}
+
+<LayoutGrid
+    on:videosEvent={(e) => {
+        pool = e.detail;
+    }}
+>
+    {#if pool && Array.isArray(pool)}
+        {#each pool as video, index}
             <Cell span={3}>
                 <Videopreview
-                    videoInfo={video.video_info}
+                    videoInfo={video.info.media}
                     on:videoEvent={(e) => {
                         videodetail = e.detail;
                         open = true;
-                        selected = "Nothing yet"
+                        selected = "Nothing yet";
                     }}
                 />
             </Cell>
         {/each}
-    </LayoutGrid>
-{/if}
+    {/if}
+</LayoutGrid>
 
 <!-- {#if showdetail==true}
         <div class = "videodetail-container">
@@ -69,7 +70,6 @@
         background-color: rgb(0, 0, 0);
         z-index: 2;
         opacity: 0.7;
-        display:flex;
-        
+        display: flex;
     }
 </style>

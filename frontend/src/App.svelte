@@ -2,12 +2,10 @@
 	import { onMount } from "svelte";
 	import Videopreview from "./pages/Videopreview.svelte";
 	import Videospool from "./pages/Videospool.svelte";
-	import { infosByTag } from "./js/fetch";
 	import Avatarlist from "./pages/Avatarlist.svelte";
 	import Tagsnavteil from "./pages/Tagsnavteil.svelte";
-	import json from "./pages/text.json";
 	import { mdiDownload } from "@mdi/js";
-	import { mdiMenu } from '@mdi/js';
+	import { mdiMenu } from "@mdi/js";
 
 	import IconButton, { Icon } from "@smui/icon-button";
 
@@ -28,7 +26,32 @@
 		active = value;
 	}
 
-	let data = json;
+	let data;
+
+	//tag request
+	import { infosByTag } from "./js/fetch.js";
+	import { createEventDispatcher } from "svelte";
+	let dispatch = createEventDispatcher();
+	let selected_tag = "Test";
+	let videos_by_tag_params = {
+		cache_refresh_threshold: 1,
+		offset: 1,
+		limit: 20,
+		allowed_media_sources: ["Local", "Youtube"],
+		allowed_tagging_methods: ["YoutubeChannel"],
+	};
+
+	// $:console.log(selected_tag); 
+
+	// (e) => {console.log("out");
+	// 	infosByTag(selected_tag, params, (res) => {
+	// 		dispatch("tagEvent", res);
+	// 	});
+	// 	data = e.datail;
+	// };
+	$:infosByTag(selected_tag, videos_by_tag_params, (res) => {
+			data = res;
+		});
 </script>
 
 <svelte:head>
@@ -47,65 +70,35 @@
 
 <div class="drawer-container">
 	<Drawer variant="dismissible" bind:open>
-	  <Header>
-		<Title>Media Subscrbiber</Title>
-		<Subtitle>It's the best drawer.</Subtitle>
-	  </Header>
-	  <Content>
-		<Tagsnavteil on:tagEvent={(e) => (data = e.detail)} />
-
-		<!-- <List>
-		  <Item
-			href="javascript:void(0)"
-			on:click={() => setActive('Gray Kittens')}
-			activated={active === 'Gray Kittens'}
-		  >
-			<Text>Gray Kittens</Text>
-		  </Item>
-		  <Item
-			href="javascript:void(0)"
-			on:click={() => setActive('A Space Rocket')}
-			activated={active === 'A Space Rocket'}
-		  >
-			<Text>A Space Rocket</Text>
-		  </Item>
-		  <Item
-			href="javascript:void(0)"
-			on:click={() => setActive('100 Pounds of Gravel')}
-			activated={active === '100 Pounds of Gravel'}
-		  >
-			<Text>100 Pounds of Gravel</Text>
-		  </Item>
-		  <Item
-			href="javascript:void(0)"
-			on:click={() => setActive('All of the Shrimp')}
-			activated={active === 'All of the Shrimp'}
-		  >
-			<Text>All of the Shrimp</Text>
-		  </Item>
-		  <Item
-			href="javascript:void(0)"
-			on:click={() => setActive('A Planet with a Mall')}
-			activated={active === 'A Planet with a Mall'}
-		  >
-			<Text>A Planet with a Mall</Text>
-		  </Item>
-		</List> -->
-	  </Content>
+		<Header>
+			<Title>Media Subscrbiber</Title>
+			<Subtitle>It's the best drawer.</Subtitle>
+		</Header>
+		<Content>
+			<Tagsnavteil
+				on:tagEvent={(e) => {
+					selected_tag = e.detail;
+				}}
+			/>
+		</Content>
 	</Drawer>
-   
+
 	<AppContent class="app-content">
-	  <main class="main-content">
-		<IconButton class="material-icons" on:click={() => (open = !open)} ripple={false}>
-			<Icon tag="svg" viewBox="0 0 24 24">
-				<path fill="currentColor" d={mdiMenu} />
-			</Icon>
-		</IconButton>
-		<br />
-		<Videospool pool={data} />
-	  </main>
+		<main class="main-content">
+			<IconButton
+				class="material-icons"
+				on:click={() => (open = !open)}
+				ripple={false}
+			>
+				<Icon tag="svg" viewBox="0 0 24 24">
+					<path fill="currentColor" d={mdiMenu} />
+				</Icon>
+			</IconButton>
+			<br />
+			<Videospool />
+		</main>
 	</AppContent>
-  </div>
+</div>
 
 <!-- <div class="left-side-container">
 	<div class="header-container"><h1>Media-subscrbiber</h1></div>
@@ -177,7 +170,7 @@
 	.drawer-container {
 		position: absolute;
 		display: flex;
-		min-height: 98% ;
+		min-height: 98%;
 		width: 99%;
 		border: 1px solid
 			var(--mdc-theme-text-hint-on-background, rgba(0, 0, 0, 0.1));

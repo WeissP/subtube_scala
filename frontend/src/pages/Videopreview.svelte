@@ -29,7 +29,7 @@
         overflow:hidden;       
     }
     .video-title-container{
-        height: 45px;
+        height: 40px;
         overflow:hidden
     }    
 </style>

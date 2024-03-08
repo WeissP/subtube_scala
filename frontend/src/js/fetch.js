@@ -33,7 +33,7 @@ export async function infosByTag(tagName, params, onSuccess) {
         },
       },
     )
-    .then((response) => {console.log(response.data); onSuccess(response.data) })
+    .then((response) => {console.log("response.data at fetch: " + JSON.stringify(response.data)); onSuccess(response.data) })
     // .then(data => {
     //   onSuccess(data)
     // })

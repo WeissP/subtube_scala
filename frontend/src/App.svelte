@@ -6,8 +6,9 @@
 	import Tagsnavteil from "./pages/Tagsnavteil.svelte";
 	import { mdiDownload } from "@mdi/js";
 	import { mdiMenu } from "@mdi/js";
-
 	import IconButton, { Icon } from "@smui/icon-button";
+	import { writable } from 'svelte/store';
+	import { videos_in_pool,testdata } from "./js/stores.js";
 
 	import Drawer, {
 		AppContent,
@@ -22,36 +23,19 @@
 	let open = false;
 	let active = "Gray Kittens";
 
+
 	function setActive(value: string) {
 		active = value;
 	}
 
-	let data;
-
-	//tag request
-	import { infosByTag } from "./js/fetch.js";
-	import { createEventDispatcher } from "svelte";
-	let dispatch = createEventDispatcher();
-	let selected_tag = "Test";
-	let videos_by_tag_params = {
-		cache_refresh_threshold: 1,
-		offset: 1,
-		limit: 20,
-		allowed_media_sources: ["Local", "Youtube"],
-		allowed_tagging_methods: ["YoutubeChannel"],
-	};
-
-	// $:console.log(selected_tag); 
-
-	// (e) => {console.log("out");
-	// 	infosByTag(selected_tag, params, (res) => {
-	// 		dispatch("tagEvent", res);
-	// 	});
-	// 	data = e.datail;
-	// };
-	$:infosByTag(selected_tag, videos_by_tag_params, (res) => {
-			data = res;
-		});
+	// let testdata_value;
+	// let data_value;
+	// testdata.subscribe((value) => {
+	// 	testdata_value = value
+	// });
+	// data.subscribe((value) => {
+	// 	data_value = value
+	// });
 </script>
 
 <svelte:head>
@@ -68,17 +52,20 @@
 	/>
 </svelte:head>
 
+<!-- <h1>The count is {testdata_value}</h1>
+<h1>The value is {data_value}</h1> -->
 <div class="drawer-container">
-	<Drawer variant="dismissible" bind:open>
+	<Drawer variant="dismissible" bind:open >
 		<Header>
 			<Title>Media Subscrbiber</Title>
 			<Subtitle>It's the best drawer.</Subtitle>
 		</Header>
 		<Content>
-			<Tagsnavteil
-				on:tagEvent={(e) => {
-					selected_tag = e.detail;
-				}}
+			<Tagsnavteil on:videosEvent={(e) => {
+				// pool = e.detail;
+				console.log("get data:" + e.detail)
+			}}
+				
 			/>
 		</Content>
 	</Drawer>
@@ -100,46 +87,6 @@
 	</AppContent>
 </div>
 
-<!-- <div class="left-side-container">
-	<div class="header-container"><h1>Media-subscrbiber</h1></div>
-	<Tagsnavteil on:tagEvent={(e) => (data = e.detail)} />
-</div>
-<div class="right-side-container">
-	<Avatarlist {data} />
-	<Videospool pool={data} />
-</div> -->
-
-<!-- <div>
-	<div style="display: flex; align-items: center;">
-		<IconButton on:click={() => clicked++}>
-			<Icon tag="svg" viewBox="0 0 24 24">
-				<path fill="currentColor" d={mdiFormatColorFill} />
-			</Icon>
-		</IconButton>
-	</div>
-	<div style="display: flex; align-items: center;">
-		<IconButton on:click={() => clicked++} disabled>
-			<Icon tag="svg" viewBox="0 0 24 24">
-				<path fill="currentColor" d={mdiWrench} />
-			</Icon>
-		</IconButton>&nbsp;(disabled)
-	</div>
-	<div style="display: flex; align-items: center;">
-		<IconButton on:click={() => clicked++} ripple={false}>
-			<Icon tag="svg" viewBox="0 0 24 24">
-				<path fill="currentColor" d={mdiCurrencyUsd} />
-			</Icon>
-		</IconButton>&nbsp;(no ripple)
-	</div>
-
-	<pre class="status">Clicked: {clicked}</pre>
-</div> -->
-
-<!-- <Button color="light" on:click={e => {infosByTag("test", res => data =res)}}> 
-	<Icon name="tags" size="2x"></Icon>
-</Button> -->
-<!-- <Avatarlist data ={data}/> -->
-
 <style>
 	.left-side-container {
 		position: absolute;
@@ -152,19 +99,6 @@
 		border-right-width: 6px;
 		border-image: linear-gradient(to right, #b9b9b9, #ffffff) 1 100%;
 	}
-	.header-container {
-		margin: 5px;
-	}
-	.right-side-container {
-		position: absolute;
-		top: 0;
-		left: 253px;
-		right: 0;
-		bottom: 0;
-		display: flex;
-		flex-direction: column;
-	}
-
 	/* These classes are only needed because the
     drawer is in a container on the page. */
 	.drawer-container {

@@ -1,41 +1,34 @@
 <script lang="ts">
     import Videopreview from "./Videopreview.svelte";
     import Videodiaglog from "./Videodiaglog.svelte";
+    //import { MasonryInfiniteGrid } from "@egjs/svelte-infinitegrid";
 
-    let pool;
+    let items = [];
     let videodetail;
-    import { onMount } from "svelte";
-    import { Icon } from "@smui/icon-button";
-    import { mdiClose } from "@mdi/js";
+    let pool;
 
     import LayoutGrid, { Cell } from "@smui/layout-grid";
 
-    import Fab from "@smui/fab";
-
-    import { Button, Modal, ModalBody, ModalFooter } from "yesvelte";
     // let length = pool[0].videos_info.length
     // let publish =pool[0].videos_info.published
     // let title = pool[0].videos_info.title
     // let img = pool[0].videos_info.thumbnails[0].url
     // $:onMount(e =>console.log("pool:" + pool));
 
-    import IconButton from "@smui/icon-button";
-    import Videodetail from "./Videodetail.svelte";
-
     let open = false;
     let selected = "Nothing yet";
     let active = "Information";
+
+    import { videos_in_pool } from "../js/stores.js";
+    import { infosByTag } from "../js/fetch";
+    videos_in_pool.subscribe((value) => {
+        pool = value;
+    });
+    //infinit grid
 </script>
 
 <Videodiaglog {videodetail} bind:open />
-
-<!-- <div class="videopool-container"> -->
-
-<LayoutGrid
-    on:videosEvent={(e) => {
-        pool = e.detail;
-    }}
->
+<LayoutGrid>
     {#if pool && Array.isArray(pool)}
         {#each pool as video, index}
             <Cell span={3}>
@@ -51,13 +44,6 @@
         {/each}
     {/if}
 </LayoutGrid>
-
-<!-- {#if showdetail==true}
-        <div class = "videodetail-container">
-            <Videodetail videoInfo ={videodetail} on:closeEvent={e => showdetail=!e.detail}/> 
-        </div>    
-    {/if} -->
-<!-- </div> -->
 
 <style>
     .shadow-backdround {

@@ -11,14 +11,10 @@
     let publish_ = date.toLocaleDateString();
 
     let dispatch = createEventDispatcher();
-
-    
-
-    
 </script>
 
 <Imgcontainer img={videoInfo.thumbnails[4].url} length={videoInfo.length} />
-<h1>{videoInfo.title}</h1>
+<div class = "videodetail-title-container">{videoInfo.title}</div>
 
 <p>{publish_}</p>
 <div style="display: flex; align-items: center;">
@@ -30,8 +26,7 @@
     </Button> -->
     <!-- <Button on:click={() => menu.setOpen(true)} ripple={false}>
         <Label>audio</Label>
-    </Button> -->
-    
+    </Button> -->    
 </div>
 
 <!-- <div class ="close-button-container">
@@ -52,5 +47,9 @@
         position: absolute;
         right: 0;
         top: 0;
+    }
+    .videodetail-title-container {
+        color: black;
+
     }
 </style>

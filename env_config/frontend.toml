@@ -3,3 +3,5 @@ packages = [
    "nodePackages.svelte-language-server",
 ]
 
+[[commands]]
+package = "openapi-generator-cli"

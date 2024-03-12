@@ -1,0 +1,416 @@
+openapi: 3.1.0
+info:
+  title: subtube
+  version: 1.0.0
+servers: [{"url" : "http://127.0.0.1:9090"}]
+paths:
+  /v1.0/youtube/tag/{tag}/videos:
+    get:
+      description: Return videos of the given tag
+      operationId: getV1.0YoutubeTagTagVideos
+      parameters:
+      - name: tag
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+      - name: cache_refresh_threshold
+        in: query
+        description: A UNIX timestamp that sets the oldest allowed cache. If the cached
+          information is (strictly) older than this threshold, it will be updated
+          and then returned; otherwise, it can be directly returned.
+        required: false
+        schema:
+          type: integer
+          format: int64
+          default: 1
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: The number of items to skip before starting to collect the
+            result set
+          format: int32
+          default: 0
+          minimum: 0
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Max number of returned items
+          format: int32
+          default: 20
+          exclusiveMinimum: 0
+      - name: allowed_media_sources
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaSource'
+      - name: allowed_tagging_methods
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaggingMethod'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MediaInfoWithTag_M'
+        '400':
+          description: 'Invalid value for: path parameter tag, Invalid value for:
+            query parameter cache_refresh_threshold, Invalid value for: query parameter
+            offset, Invalid value for: query parameter limit, Invalid value for: query
+            parameter allowed_media_sources, Invalid value for: query parameter allowed_tagging_methods'
+          content:
+            text/plain:
+              schema:
+                type: string
+  /v1.0/youtube/tag/{tag}/channels:
+    get:
+      description: Return channels of the given tag
+      operationId: getV1.0YoutubeTagTagChannels
+      parameters:
+      - name: tag
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+      - name: cache_refresh_threshold
+        in: query
+        description: A UNIX timestamp that sets the oldest allowed cache. If the cached
+          information is (strictly) older than this threshold, it will be updated
+          and then returned; otherwise, it can be directly returned.
+        required: false
+        schema:
+          type: integer
+          format: int64
+          default: 1
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: The number of items to skip before starting to collect the
+            result set
+          format: int32
+          default: 0
+          minimum: 0
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Max number of returned items
+          format: int32
+          default: 20
+          exclusiveMinimum: 0
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChannelInfo'
+        '400':
+          description: 'Invalid value for: path parameter tag, Invalid value for:
+            query parameter cache_refresh_threshold, Invalid value for: query parameter
+            offset, Invalid value for: query parameter limit'
+          content:
+            text/plain:
+              schema:
+                type: string
+  /v1.0/youtube/channel/{channel_id}:
+    get:
+      operationId: getV1.0YoutubeChannelChannel_id
+      parameters:
+      - name: channel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelInfo'
+        '400':
+          description: 'Invalid value for: path parameter channel_id'
+          content:
+            text/plain:
+              schema:
+                type: string
+  /v1.0/youtube/channel/{channel_id}/videos:
+    get:
+      description: Return videos of the given channel
+      operationId: getV1.0YoutubeChannelChannel_idVideos
+      parameters:
+      - name: channel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: sort_order
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/MediaSortOrder'
+      - name: cache_refresh_threshold
+        in: query
+        description: A UNIX timestamp that sets the oldest allowed cache. If the cached
+          information is (strictly) older than this threshold, it will be updated
+          and then returned; otherwise, it can be directly returned.
+        required: false
+        schema:
+          type: integer
+          format: int64
+          default: 1
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: The number of items to skip before starting to collect the
+            result set
+          format: int32
+          default: 0
+          minimum: 0
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Max number of returned items
+          format: int32
+          default: 20
+          exclusiveMinimum: 0
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MediaInfo_M'
+        '400':
+          description: 'Invalid value for: path parameter channel_id, Invalid value
+            for: query parameter sort_order, Invalid value for: query parameter cache_refresh_threshold,
+            Invalid value for: query parameter offset, Invalid value for: query parameter
+            limit'
+          content:
+            text/plain:
+              schema:
+                type: string
+  /v1.0/youtube/channel/search:
+    get:
+      description: Return a list of ChannelInfo with respect to the given query
+      operationId: getV1.0YoutubeChannelSearch
+      parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChannelInfo'
+        '400':
+          description: 'Invalid value for: query parameter query'
+          content:
+            text/plain:
+              schema:
+                type: string
+components:
+  schemas:
+    Channel:
+      required:
+      - id
+      - name
+      - descriptionHtml
+      - subCount
+      type: object
+      properties:
+        id:
+          type: string
+          description: The youtube channel ID (must be 24 ASCII characters)
+          example: UCjuNibFJ21MiSNpu8LZyV4w
+        name:
+          type: string
+        descriptionHtml:
+          type: string
+          description: Channel description in HTML form
+        subCount:
+          type: integer
+          description: Number of subscribtions
+          format: int32
+          exclusiveMinimum: 0
+        thumbnails:
+          type: array
+          items:
+            $ref: '#/components/schemas/Thumbnail'
+          description: Number of videos
+    ChannelInfo:
+      required:
+      - channel
+      - meta
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/Channel'
+        meta:
+          $ref: '#/components/schemas/ChannelMeta'
+    ChannelMeta:
+      required:
+      - cachedAt
+      type: object
+      properties:
+        cachedAt:
+          type: integer
+          description: The last cached UNIX Timestamp
+          format: int64
+        intro:
+          type: string
+          minLength: 1
+    MediaInfoWithTag_M:
+      required:
+      - info
+      - tagMeta
+      type: object
+      properties:
+        info:
+          $ref: '#/components/schemas/MediaInfo_M'
+        tagMeta:
+          $ref: '#/components/schemas/TagMeta'
+    MediaInfo_M:
+      required:
+      - media
+      - meta
+      type: object
+      properties:
+        media:
+          $ref: '#/components/schemas/YoutubeMedia'
+        meta:
+          $ref: '#/components/schemas/MediaMeta'
+    MediaMeta:
+      required:
+      - mediaID
+      - source
+      - cachedAt
+      type: object
+      properties:
+        mediaID:
+          type: string
+          format: uuid
+        source:
+          $ref: '#/components/schemas/MediaSource'
+          description: The source of the media
+        cachedAt:
+          type: integer
+          description: The UNIX timestamp that the media info was cached
+          format: int64
+        introduction:
+          type: string
+          description: Personal introduction of the media
+          minLength: 1
+      description: The meta information of the media, normally such information doesn't
+        come from the media source, but from the backend server
+    MediaSortOrder:
+      type: string
+      description: The sort order of medias
+      default: Newest
+      enum:
+      - Newest
+      - Popular
+    MediaSource:
+      type: string
+      enum:
+      - Local
+      - Youtube
+    TagMeta:
+      type: object
+      properties:
+        taggingMethods:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaggingMethod'
+    TaggingMethod:
+      type: string
+      enum:
+      - YoutubeChannel
+      - YoutubeVideo
+    Thumbnail:
+      required:
+      - height
+      - width
+      - url
+      type: object
+      properties:
+        height:
+          type: integer
+          format: int32
+          exclusiveMinimum: 0
+        width:
+          type: integer
+          format: int32
+          exclusiveMinimum: 0
+        url:
+          type: string
+    YoutubeMedia:
+      required:
+      - length
+      - title
+      - channelID
+      - videoID
+      - published
+      - descriptionHtml
+      type: object
+      properties:
+        length:
+          type: integer
+          description: The length of the media in seconds
+          format: int32
+          exclusiveMinimum: 0
+        title:
+          type: string
+        thumbnails:
+          type: array
+          items:
+            $ref: '#/components/schemas/Thumbnail'
+        channelID:
+          type: string
+          description: The youtube channel ID (must be 24 ASCII characters)
+          example: UCjuNibFJ21MiSNpu8LZyV4w
+        videoID:
+          type: string
+          description: The youtube video ID (must be 11 ASCII characters)
+          example: lOwjw1Ja83Y
+        published:
+          type: integer
+          description: UNIX Timestamp
+          format: int64
+        descriptionHtml:
+          type: string
+          description: Media description in HTML form
+      description: The information of the media

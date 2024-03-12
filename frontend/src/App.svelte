@@ -7,8 +7,11 @@
 	import { mdiDownload } from "@mdi/js";
 	import { mdiMenu } from "@mdi/js";
 	import IconButton, { Icon } from "@smui/icon-button";
-	import { writable } from 'svelte/store';
-	import { videos_in_pool,testdata } from "./js/stores.js";
+	import { writable } from "svelte/store";
+	import { videos_in_pool, testdata } from "./js/stores.js";
+	import { DefaultApi } from "./genstub/api";
+	import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
+
 
 	import Drawer, {
 		AppContent,
@@ -23,10 +26,18 @@
 	let open = false;
 	let active = "Gray Kittens";
 
-
 	function setActive(value: string) {
 		active = value;
 	}
+
+	// const config: AxiosRequestConfig ={
+	// 	baseURL: "http://127.0.0.1:9090",
+	// }
+	let newapi = new DefaultApi();
+
+	newapi.getV10YoutubeTagTagVideos("Test", undefined,0,2,["Youtube"],["YoutubeChannel","YoutubeVideo"]).then((res) => {
+		console.log(res.data);
+	}).catch((error)=>{console.log("catched error: " + error)});
 
 	// let testdata_value;
 	// let data_value;
@@ -54,7 +65,7 @@
 
 <!-- <h1>The count is {testdata_value}</h1>
 <h1>The value is {data_value}</h1> -->
-<div class="drawer-container">
+<!-- <div class="drawer-container">
 	<Drawer variant="dismissible" bind:open >
 		<Header>
 			<Title>Media Subscrbiber</Title>
@@ -85,7 +96,7 @@
 			<Videospool />
 		</main>
 	</AppContent>
-</div>
+</div> -->
 
 <style>
 	.left-side-container {
